@@ -1,7 +1,7 @@
 # reusable/ecr-login.yml
 #
 # Reusable workflow: build one Spring Petclinic service, scan it with Trivy,
-# and push the ARM64 image to ECR dev.
+# and push the AMD64 image to ECR dev.
 #
 # Called by build-push.yml once per changed service (matrix strategy).
 # All AWS credentials come through the caller via "secrets: inherit".
@@ -70,15 +70,15 @@ jobs:
           distribution: temurin
           cache: maven
 
-      # ── Docker (ARM64 cross-compilation) ───────────────────────────────────
-      # QEMU must be installed before Docker Buildx so the arm64 emulator is
+      # ── Docker (AMD64 cross-compilation) ───────────────────────────────────
+      # QEMU must be installed before Docker Buildx so the amd64 emulator is
       # available. The Maven buildDocker profile calls "docker build --platform
-      # linux/arm64 --load", which routes through Buildx when it is the default
+      # linux/amd64 --load", which routes through Buildx when it is the default
       # builder. --load ensures the image lands in the local daemon for scanning.
-      - name: Set up QEMU (ARM64 emulation)
+      - name: Set up QEMU (AMD64 emulation)
         uses: docker/setup-qemu-action@v3
         with:
-          platforms: arm64
+          platforms: amd64
 
       - name: Set up Docker Buildx (default builder)
         uses: docker/setup-buildx-action@v3
@@ -100,14 +100,14 @@ jobs:
       # Builds the single service module and its upstream parents (-am).
       # The buildDocker Maven profile calls:
       #   docker build --build-arg ARTIFACT_NAME=... --build-arg EXPOSED_PORT=...
-      #                --platform linux/arm64 --load -t springcommunity/spring-petclinic-{service}
+      #                --platform linux/amd64 --load -t springcommunity/spring-petclinic-{service}
       # The --load flag (container.build.extraarg in pom.xml) puts the image in
       # the local daemon, where Trivy can scan it before the push.
-      - name: Build Docker image (ARM64) with Maven
+      - name: Build Docker image (AMD64) with Maven
         run: |
           ./mvnw clean install \
             -P buildDocker \
-            -Dcontainer.platform="linux/arm64" \
+            -Dcontainer.platform="linux/amd64" \
             -pl "${{ env.MAVEN_MODULE }}" -am \
             --no-transfer-progress \
             --batch-mode
