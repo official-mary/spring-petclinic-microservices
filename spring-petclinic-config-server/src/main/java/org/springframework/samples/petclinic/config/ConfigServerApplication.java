@@ -31,3 +31,4 @@ public class ConfigServerApplication {
 	}
 }
 // trigger build test
+// ci: trigger build
