@@ -53,7 +53,7 @@ jobs:
       # Maven/Docker image produced locally by the buildDocker profile
       SOURCE_IMAGE: springcommunity/spring-petclinic-${{ inputs.service }}
       # ECR target image (dev environment)
-      TARGET_IMAGE: ${{ inputs.aws-account-id }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com/petclinic-dev/${{ inputs.service }}:${{ inputs.sha }}
+      TARGET_IMAGE: ${{ inputs.aws-account-id }}.dkr.ecr.${{ inputs.aws-region }}.amazonaws.com/petclinic-dev-${{ inputs.service }}:${{ inputs.sha }}
 
     steps:
       # TODO(security): pin each action to a full commit SHA to prevent supply-chain
